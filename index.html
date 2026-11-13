@@ -1,0 +1,493 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Unicorn Clicker 🦄</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&display=swap');
+
+:root {
+  --pink: #ff8fc8;
+  --purple: #a78bfa;
+  --dark: #704b91;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: 'Fredoka', sans-serif;
+  color: var(--dark);
+  background: linear-gradient(135deg, #ffe0f0, #e9ddff, #fff0fa);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 25px 15px;
+  overflow-x: hidden;
+}
+
+body::before {
+  content: "✦  ✧  ✦  ✧  ✦";
+  position: fixed;
+  top: 5%;
+  left: 5%;
+  color: #fff;
+  font-size: 35px;
+  letter-spacing: 30px;
+  opacity: .7;
+  pointer-events: none;
+}
+
+.game {
+  width: 100%;
+  max-width: 510px;
+  padding: 30px 25px;
+  background: rgba(255,255,255,.78);
+  border: 3px solid white;
+  border-radius: 32px;
+  box-shadow: 0 15px 45px #bd91ce45;
+  text-align: center;
+  position: relative;
+}
+
+h1 {
+  margin: 0;
+  font-size: clamp(34px, 8vw, 48px);
+  color: #b36acb;
+  text-shadow: 2px 3px #f9c9e8;
+}
+
+.subtitle {
+  margin: 5px 0 20px;
+  color: #aa83b9;
+}
+
+.counter-card {
+  background: linear-gradient(120deg, #ffe3f2, #eee1ff);
+  border-radius: 20px;
+  padding: 16px;
+  margin-bottom: 15px;
+}
+
+.counter {
+  font-size: 43px;
+  font-weight: 700;
+  color: #a35ec1;
+  line-height: 1.2;
+}
+
+.counter-label {
+  font-size: 15px;
+  color: #9568ad;
+}
+
+.progress-info {
+  display: flex;
+  justify-content: space-between;
+  font-size: 14px;
+  margin: 12px 2px 6px;
+}
+
+.progress-track {
+  height: 17px;
+  background: #eadcf2;
+  border-radius: 30px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  width: 0%;
+  height: 100%;
+  border-radius: 30px;
+  background: linear-gradient(90deg, #ff91ca, #b58cff);
+  transition: width .25s ease;
+}
+
+.unicorn-area {
+  position: relative;
+  padding: 15px 0 10px;
+}
+
+.unicorn {
+  border: none;
+  background: none;
+  font-size: 145px;
+  cursor: pointer;
+  line-height: 1.3;
+  filter: drop-shadow(0 8px 7px #c59bce55);
+  transition: transform .12s;
+  touch-action: manipulation;
+  user-select: none;
+}
+
+.unicorn:hover { transform: scale(1.07); }
+.unicorn:active { transform: scale(.88) rotate(-5deg); }
+
+.click-hint {
+  color: #a981b7;
+  font-size: 15px;
+  margin-top: -5px;
+}
+
+.float-text {
+  position: absolute;
+  pointer-events: none;
+  font-size: 25px;
+  font-weight: 700;
+  color: #d45fa9;
+  animation: floatUp .8s ease-out forwards;
+}
+
+@keyframes floatUp {
+  0% { opacity: 1; transform: translateY(0) scale(.8); }
+  100% { opacity: 0; transform: translateY(-85px) scale(1.3); }
+}
+
+.upgrade {
+  background: linear-gradient(120deg, #ffadd8, #c4a2ff);
+  border: 3px solid white;
+  color: white;
+  width: 100%;
+  border-radius: 19px;
+  padding: 16px 12px;
+  font-family: inherit;
+  font-size: 19px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 5px 0 #b68bcf;
+  transition: .15s;
+}
+
+.upgrade:hover:not(:disabled) {
+  transform: translateY(-3px);
+  filter: brightness(1.04);
+}
+
+.upgrade:active:not(:disabled) {
+  transform: translateY(2px);
+  box-shadow: 0 2px 0 #b68bcf;
+}
+
+.upgrade:disabled {
+  cursor: not-allowed;
+  filter: grayscale(.35);
+  opacity: .7;
+}
+
+.upgrade-description {
+  font-size: 13px;
+  margin: 10px 0 15px;
+  color: #9b7cab;
+}
+
+.stats {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin: 18px 0;
+  flex-wrap: wrap;
+}
+
+.stat {
+  background: #f8edff;
+  border-radius: 13px;
+  padding: 10px 18px;
+  font-size: 14px;
+}
+
+.reset {
+  border: 1px solid #d9b8e9;
+  color: #a47cb4;
+  background: white;
+  border-radius: 20px;
+  padding: 8px 18px;
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.reset:hover { background: #fff0fa; }
+
+.footer {
+  margin-top: 20px;
+  font-size: 12px;
+  color: #b49ac1;
+}
+
+.hidden { display: none !important; }
+
+.win-screen {
+  position: fixed;
+  inset: 0;
+  z-index: 10;
+  background: rgba(79, 42, 100, .88);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+}
+
+.win-card {
+  background: linear-gradient(135deg, #fff0fa, #eee2ff);
+  padding: 40px 25px;
+  border-radius: 30px;
+  max-width: 420px;
+  width: 100%;
+  text-align: center;
+  box-shadow: 0 0 50px #ffb9e8;
+  animation: pop .5s ease;
+}
+
+@keyframes pop {
+  from { transform: scale(.5); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+.win-card h2 {
+  font-size: 38px;
+  color: #b46acb;
+  margin: 10px 0;
+}
+
+.win-emoji { font-size: 90px; }
+
+.win-card p {
+  font-size: 18px;
+  line-height: 1.5;
+}
+
+.win-card button {
+  background: linear-gradient(90deg, #ff91ca, #ad8bff);
+  border: none;
+  border-radius: 20px;
+  color: white;
+  font-family: inherit;
+  font-size: 18px;
+  font-weight: bold;
+  padding: 13px 25px;
+  cursor: pointer;
+}
+
+@media(max-width:400px) {
+  .game { padding: 23px 16px; }
+  .unicorn { font-size: 120px; }
+}
+</style>
+</head>
+
+<body>
+
+<main class="game">
+  <h1>🦄 Unicorn Clicker</h1>
+  <p class="subtitle">A magical adventure awaits!</p>
+
+  <section class="counter-card">
+    <div class="counter" id="count">0</div>
+    <div class="counter-label">🌈 Unicorns Collected</div>
+  </section>
+
+  <div class="progress-info">
+    <span>🏆 Goal: 1,000 unicorns</span>
+    <span id="percentage">0%</span>
+  </div>
+
+  <div class="progress-track">
+    <div class="progress-fill" id="progress"></div>
+  </div>
+
+  <div class="unicorn-area" id="unicornArea">
+    <button class="unicorn" id="unicorn" aria-label="Click to collect unicorns">
+      🦄
+    </button>
+    <div class="click-hint">✨ Tap the unicorn to collect! ✨</div>
+  </div>
+
+  <button class="upgrade" id="upgrade">
+    🌈 Rainbow Power — 50 Unicorns
+  </button>
+
+  <p class="upgrade-description" id="upgradeDescription">
+    Purchase Rainbow Power to permanently DOUBLE your unicorns per click!
+  </p>
+
+  <div class="stats">
+    <div class="stat">
+      💖 Per Click: <strong id="power">1</strong>
+    </div>
+    <div class="stat">
+      🌟 Upgrade: <strong id="upgradeStatus">Not Owned</strong>
+    </div>
+  </div>
+
+  <button class="reset" id="reset">↻ Reset Game</button>
+
+  <div class="footer">
+    Made with 💗, magic & unicorns
+  </div>
+</main>
+
+<div class="win-screen hidden" id="winScreen">
+  <div class="win-card">
+    <div class="win-emoji">🦄🌈</div>
+    <h2>You Won!</h2>
+    <p>
+      Congratulations, Unicorn Master!<br>
+      You collected 1,000 unicorns and
+      completed your magical adventure!
+    </p>
+    <p>✨ You are absolutely magical! ✨</p>
+    <button id="playAgain">Play Again 💖</button>
+  </div>
+</div>
+
+<script>
+const GOAL = 1000;
+const UPGRADE_COST = 50;
+
+let unicorns = 0;
+let multiplier = 1;
+let upgradeOwned = false;
+let won = false;
+
+const countEl = document.getElementById("count");
+const progressEl = document.getElementById("progress");
+const percentageEl = document.getElementById("percentage");
+const powerEl = document.getElementById("power");
+const upgradeEl = document.getElementById("upgrade");
+const upgradeStatusEl = document.getElementById("upgradeStatus");
+const upgradeDescriptionEl = document.getElementById("upgradeDescription");
+const unicornEl = document.getElementById("unicorn");
+const unicornArea = document.getElementById("unicornArea");
+const winScreen = document.getElementById("winScreen");
+
+function saveGame() {
+  localStorage.setItem("unicornClickerSave", JSON.stringify({
+    unicorns,
+    multiplier,
+    upgradeOwned,
+    won
+  }));
+}
+
+function loadGame() {
+  try {
+    const saved = JSON.parse(
+      localStorage.getItem("unicornClickerSave")
+    );
+
+    if (!saved) return;
+
+    unicorns = Math.max(0, Math.floor(Number(saved.unicorns) || 0));
+    upgradeOwned = saved.upgradeOwned === true;
+    multiplier = upgradeOwned ? 2 : 1;
+    won = unicorns >= GOAL;
+  } catch (error) {
+    console.warn("Could not load saved game.");
+  }
+}
+
+function updateDisplay() {
+  countEl.textContent = unicorns.toLocaleString();
+
+  const percent = Math.min((unicorns / GOAL) * 100, 100);
+  progressEl.style.width = percent + "%";
+  percentageEl.textContent = Math.floor(percent) + "%";
+
+  powerEl.textContent = multiplier;
+  upgradeStatusEl.textContent = upgradeOwned ? "Owned ✓" : "Not Owned";
+
+  if (upgradeOwned) {
+    upgradeEl.textContent = "🌈 Rainbow Power Purchased ✓";
+    upgradeEl.disabled = true;
+    upgradeDescriptionEl.textContent =
+      "Your unicorn clicks are permanently doubled!";
+  } else {
+    upgradeEl.textContent =
+      "🌈 Rainbow Power — " + UPGRADE_COST + " Unicorns";
+    upgradeEl.disabled = unicorns < UPGRADE_COST;
+    upgradeDescriptionEl.textContent =
+      "Purchase Rainbow Power to permanently DOUBLE your unicorns per click!";
+  }
+
+  if (unicorns >= GOAL && !won) {
+    won = true;
+    winScreen.classList.remove("hidden");
+  }
+
+  if (won) {
+    winScreen.classList.remove("hidden");
+  }
+
+  saveGame();
+}
+
+function collectUnicorn(event) {
+  if (won) return;
+
+  unicorns += multiplier;
+
+  const float = document.createElement("div");
+  float.className = "float-text";
+  float.textContent = "+" + multiplier + " 💖";
+
+  const rect = unicornArea.getBoundingClientRect();
+  const x = event && event.clientX
+    ? event.clientX - rect.left
+    : rect.width / 2;
+
+  float.style.left = Math.max(0, Math.min(x, rect.width - 80)) + "px";
+  float.style.top = "35px";
+
+  unicornArea.appendChild(float);
+  setTimeout(() => float.remove(), 850);
+
+  updateDisplay();
+}
+
+function buyUpgrade() {
+  if (upgradeOwned || unicorns < UPGRADE_COST || won) return;
+
+  unicorns -= UPGRADE_COST;
+  upgradeOwned = true;
+  multiplier = 2;
+
+  updateDisplay();
+}
+
+function resetGame() {
+  if (!confirm("Are you sure you want to reset all your unicorns?")) {
+    return;
+  }
+
+  unicorns = 0;
+  multiplier = 1;
+  upgradeOwned = false;
+  won = false;
+
+  winScreen.classList.add("hidden");
+  updateDisplay();
+}
+
+function playAgain() {
+  unicorns = 0;
+  multiplier = 1;
+  upgradeOwned = false;
+  won = false;
+
+  winScreen.classList.add("hidden");
+  updateDisplay();
+}
+
+unicornEl.addEventListener("click", collectUnicorn);
+upgradeEl.addEventListener("click", buyUpgrade);
+document.getElementById("reset").addEventListener("click", resetGame);
+document.getElementById("playAgain").addEventListener("click", playAgain);
+
+loadGame();
+updateDisplay();
+</script>
+
+</body>
+</html>
